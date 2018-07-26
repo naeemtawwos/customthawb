@@ -5,6 +5,7 @@ use Yii;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
 use app\models\Orders;
+use app\models\OrdersHept;
 use app\models\OrdersSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException; 
@@ -15,6 +16,10 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use yii\data\ArrayDataProvider;
+use app\models\Products;
+use app\models\ProductsSearch;
+
 
 /**
  * Site controller
@@ -37,7 +42,7 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'buy'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -76,9 +81,48 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $searchModel = new ProductsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);        
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+        
+        
+        
+        
+        
+        
     }
 
+    public function actionBuy($id){
+        $model = new OrdersHept();
+        $model->product_id = $id;
+        return $this->render('buy', ['model'=>$model]);
+    }
+    public function actionConfirm($id){               
+     $model = new OrdersHept();     
+     $model->customer_id = Yii::$app->user->id;    
+     $model->product_id = $id;                    
+     $model->qty =Yii::$app->request->get()['OrdersHept']['qty'];
+     $model->price = Products::findOne($id)['price'] * $model->qty;
+     $model->purchasedate = date("y.m.d");     
+     $model->delivery_status = "ordered";          
+     if($model->validate()){
+     $model->save();
+     $product = Products::findOne(['id'=>$id]);
+     $product->setAttribute("stockqty", $product->stockqty-$model->qty);
+     $product->update();
+     return $this->render('invoice', ['model' => $model, 'product'=>$product]);
+     }
+     return $this->render('buy', ['model'=>$model]);
+     
+    }
+    
+    public function actionAdmin(){
+        return $this->render('admin');
+    }
+    
     
     /**
      * 
@@ -86,20 +130,18 @@ class SiteController extends Controller
      * Lists all Orders models.
      * @return mixed
      */
-    public function actionOrders()
+    /*public function actionOrders()
     {
         
         $searchModel = new OrdersSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        
-        
-        
         
         return $this->render('orders', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
+    */
     /**
      * Logs in a user.
      *
@@ -191,6 +233,9 @@ class SiteController extends Controller
 
         return $this->goHome();
     }
+
+    
+        
 
     /**
      * Displays contact page.

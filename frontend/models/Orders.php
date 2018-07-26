@@ -119,6 +119,8 @@ class Orders extends \yii\db\ActiveRecord
         return $this->hasOne(Countries::className(), ['id' => 'shipping_country']);
     }
 
+
+    
     /**
      * @return \yii\db\ActiveQuery
      */
