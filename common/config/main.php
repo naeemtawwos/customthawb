@@ -1,9 +1,11 @@
 <?php
+$config = parse_ini_file(dirname(dirname(__DIR__)).'/common/secure/api.ini', true);
 return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'cache' => [
@@ -25,9 +27,16 @@ return [
               'clients' => [
                   'google' => [
                       'class'        => 'dektrium\user\clients\Google',
-                      'clientId'     => '',
-                      'clientSecret' => '',
+                      'clientId'     => $config['oauth_google_clientId'],
+                      'clientSecret' => $config['oauth_google_clientSecret'],
                   ],
+                  'twitter' => [
+                      'class'        => 'dektrium\user\clients\Twitter',
+                      
+                  ],
+                  'facebook' => [
+                      'class'        => 'dektrium\user\clients\Facebook',                      
+                  ]
                 ],
         ], 
         'urlManager'=>[

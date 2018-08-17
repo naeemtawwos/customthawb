@@ -15,11 +15,19 @@ return [
         'request' => [
             'csrfParam' => '_csrf-frontend',
         ],
-        'user' => [
+        /*'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
-        ],
+        ],*/
+        /*'user' => [
+            'class' => 'dektrium\user\Module',
+            'enableUnconfirmedLogin' => TRUE,
+            'confirmWithin' => 21600,
+            'cost' => 12,
+            
+            //'admins' => ['admin']
+        ],*/
         'session' => [
             // this is the name of the session cookie used for login on the frontend
             'name' => 'advanced-frontend',
@@ -44,6 +52,14 @@ return [
             ],
         ],
         */
+    ],
+    'modules' => [
+        'user' => [
+            'class' => 'dektrium\user\Module','enableUnconfirmedLogin' => TRUE,
+            'confirmWithin' => 21600,
+            'cost' => 12,
+            'admins' => ['admin']
+        ],
     ],
     'params' => $params,
 ];

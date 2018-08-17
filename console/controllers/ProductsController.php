@@ -5,7 +5,7 @@ use yii\console\Controller;
 use common\models\User;
 use Yii;
 
-class RbacController extends Controller
+class ProductsController extends Controller
 {
     public function actionAssign($role, $email)
     {
